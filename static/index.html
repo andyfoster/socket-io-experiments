@@ -19,23 +19,21 @@
 <script type="text/javascript">
   var socket = io({transports: ['websocket'], upgrade: false});
 
+  var addListItem = (message) => {
+    var li = document.createElement('li');
+    li.appendChild(document.createTextNode(message));
+    document.getElementById('text').appendChild(li);
+  }
+
   document.getElementById('submit').addEventListener('click', (e) => {
     var userName = document.getElementById('inputName').value;
     socket.emit('pingFromWeb', {name: userName});
   });
 
+  socket.on('user.events', addListItem);
   socket.on('sendDogName', (data) => {
-    console.log('Another one came in: ' + data);
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode('Your dog name is ' + data));
-    document.getElementById('text').appendChild(li);
+    addListItem('Your dog name is ' + data);
   });
-
-  socket.on('user.events', (data) => {
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode(data));
-    document.getElementById('text').appendChild(li);
-  })
 
 </script>
 
