@@ -30,6 +30,13 @@
     li.appendChild(document.createTextNode('Your dog name is ' + data));
     document.getElementById('text').appendChild(li);
   });
+
+  socket.on('user.events', (data) => {
+    var li = document.createElement('li');
+    li.appendChild(document.createTextNode(data));
+    document.getElementById('text').appendChild(li);
+  })
+
 </script>
 
 
