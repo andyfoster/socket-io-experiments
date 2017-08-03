@@ -17,7 +17,16 @@
 </ol>
 
 <script type="text/javascript">
-  var socket = io({transports: ['websocket'], upgrade: false});
+
+// Set room name from the URL
+const roomName = window.location.pathname.split("/")[1];
+console.log(roomName);
+
+  var socket = io({transports: ['websocket'], upgrade: false, roomName: 'qwerty'});
+
+  // Browser can't join the room but it tells server what
+  // room it wants to join
+  socket.emit('room.join', roomName);
 
   var addListItem = (message) => {
     var li = document.createElement('li');
@@ -27,7 +36,7 @@
 
   document.getElementById('submit').addEventListener('click', (e) => {
     var userName = document.getElementById('inputName').value;
-    socket.emit('pingFromWeb', {name: userName});
+    socket.emit('pingFromWeb', {name: userName, room: roomName});
   });
 
   socket.on('user.events', addListItem);
