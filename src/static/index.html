@@ -8,13 +8,24 @@
 <h1>Live Scores</h1>
 
 <div id="scoreUpdater">
-  <h2>Scores</h2>
-  <p>Team One</p>
-  <h2 id="teamOneScore">0</h2>
-    <input type="button" id="incrTeamOne" value="+ Team One">
-  <h2 id="teamTwoScore">0</h2>
-    <input type="button" id="incrTeamTwo" value="+ Team Two">
+  <table>
+    <tr>
+      <td>Team One</td>
+      <td>Team Two</td>
+    </tr>
+    <tr>
+      <td><h2 id="teamOneScore">0</h2></td>
+      <td><h2 id="teamTwoScore">0</h2></td>
+    </tr>
+    <tr>
+      <td><input type="button" id="incrTeamOne" value="+ Team One"></td>
+      <td><input type="button" id="incrTeamTwo" value="+ Team Two"></td>
+    </tr>
+  </table>
 </div>
+<br>
+<br>
+<br>
 
 
 <input type="text" name="" id="inputName">
@@ -23,12 +34,46 @@
 <ol id="text">
 </ol>
 
+<button id="resetScores">Reset All Scores</button>
+
 
 
 <script type="text/javascript">
 
   // Set room name from the URL
   const roomName = window.location.pathname.split("/")[1];
+
+
+  document.getElementById("teamOneScore").innerHTML =
+    localStorage.getItem("teamOneScore") || 0;
+  document.getElementById("teamTwoScore").innerHTML =
+    localStorage.getItem("teamTwoScore") || 0;
+
+
+  let incrScore = (teamName) => {
+    // All logic for updating, emiting and storing score
+    // both locally and in persistent storage
+  };
+
+  let resetScores = () => {
+    // localStorage.removeItem("teamTwoScore", "teamOneScore");
+    localStorage.setItem("teamOneScore", 0);
+    localStorage.setItem("teamTwoScore", 0);
+
+    document.getElementById("teamOneScore").innerHTML = 0;
+    document.getElementById("teamTwoScore").innerHTML = 0;
+
+    socket.emit('scoreUpdate', {
+        room: roomName,
+        teamOne: 0,
+        teamTwo: 0
+      });
+  };
+
+  document.querySelector('#resetScores').addEventListener('click', () => {
+    resetScores();
+  });
+
 
   let handleScoreChange = (e) => {
     if (e.target !== e.currentTarget) {
@@ -38,8 +83,12 @@
         var clickedItem = e.target.id;
 
         if (clickedItem === 'incrTeamOne') {
+          // TODO
+          // incrementTeam('teamOne');
           var newTeamOneScore = +teamOneScore + 1
           document.querySelector('#teamOneScore').innerHTML = newTeamOneScore;
+          localStorage.setItem("teamOneScore", newTeamOneScore);
+
           socket.emit('scoreUpdate', {
               room: roomName,
               teamOne: newTeamOneScore
@@ -48,6 +97,9 @@
         } else if (clickedItem === 'incrTeamTwo') {
           var newTeamTwoScore = +teamTwoScore + 1
           document.querySelector('#teamTwoScore').innerHTML = newTeamTwoScore;
+          localStorage.setItem("teamTwoScore", newTeamTwoScore);
+
+
           socket.emit('scoreUpdate', {
               room: roomName,
               teamTwo: newTeamTwoScore
@@ -81,8 +133,15 @@
     console.log('push data is in!!');
     console.log(data);
     // update info here
-    if (data.teamOne) document.querySelector('#teamOneScore').innerHTML = data.teamOne;
-    if (data.teamTwo) document.querySelector('#teamTwoScore').innerHTML = data.teamTwo;
+    if (data.teamOne != null) {
+      document.querySelector('#teamOneScore').innerHTML = data.teamOne;
+      localStorage.setItem("teamOneScore", data.teamOne);
+    }
+    if (data.teamTwo != null) {
+      document.querySelector('#teamTwoScore').innerHTML = data.teamTwo;
+      localStorage.setItem("teamTwoScore", data.teamTwo);
+    }
+
   });
 
 
