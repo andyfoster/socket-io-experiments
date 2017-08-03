@@ -167,11 +167,11 @@ module.exports = require("socket.io");
 var path = __webpack_require__(5);
 
 router.get('/*', function (req, res) {
-  res.sendFile(path.join(__dirname, 'static/index.html'));
+  res.sendFile(path.join(__dirname, './static/index.html'));
 });
 
 module.exports = router;
-/* WEBPACK VAR INJECTION */}.call(exports, ""))
+/* WEBPACK VAR INJECTION */}.call(exports, "src"))
 
 /***/ }),
 /* 5 */

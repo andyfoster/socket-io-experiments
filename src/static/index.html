@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello World</title>
+  <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+<h1>Live Scores</h1>
+
+<div id="scoreUpdater">
+  <h2>Scores</h2>
+  <p>Team One</p>
+  <h2 id="teamOneScore">0</h2>
+    <input type="button" id="incrTeamOne" value="+ Team One">
+  <h2 id="teamTwoScore">0</h2>
+    <input type="button" id="incrTeamTwo" value="+ Team Two">
+</div>
+
+
+<input type="text" name="" id="inputName">
+<input type="submit" name="" id="submit">
+
+<ol id="text">
+</ol>
+
+
+
+<script type="text/javascript">
+
+  // Set room name from the URL
+  const roomName = window.location.pathname.split("/")[1];
+
+  let handleScoreChange = (e) => {
+    if (e.target !== e.currentTarget) {
+        var teamOneScore = document.querySelector('#teamOneScore').innerHTML;
+        var teamTwoScore = document.querySelector('#teamTwoScore').innerHTML;
+
+        var clickedItem = e.target.id;
+
+        if (clickedItem === 'incrTeamOne') {
+          var newTeamOneScore = +teamOneScore + 1
+          document.querySelector('#teamOneScore').innerHTML = newTeamOneScore;
+          socket.emit('scoreUpdate', {
+              room: roomName,
+              teamOne: newTeamOneScore
+            });
+
+        } else if (clickedItem === 'incrTeamTwo') {
+          var newTeamTwoScore = +teamTwoScore + 1
+          document.querySelector('#teamTwoScore').innerHTML = newTeamTwoScore;
+          socket.emit('scoreUpdate', {
+              room: roomName,
+              teamTwo: newTeamTwoScore
+            });
+        }
+    }
+    e.stopPropagation();
+  };
+
+  document.querySelector('#scoreUpdater').addEventListener('click', handleScoreChange, false);
+
+  var socket = io({transports: ['websocket'], upgrade: false});
+
+  // Browser can't join the room but it tells server what
+  // room it wants to join
+  socket.emit('room.join', roomName);
+
+  var addListItem = (message) => {
+    var li = document.createElement('li');
+    li.appendChild(document.createTextNode(message));
+    document.querySelector('#text').appendChild(li);
+  }
+
+  document.querySelector('#submit').addEventListener('click', (e) => {
+    var userName = document.querySelector('#inputName').value;
+    socket.emit('pingFromWeb', {name: userName, room: roomName});
+    // socket.emit('scoreUpdate', {room: roomName, teamOne: 1, teamTwo: 3});
+  });
+
+  socket.on('scoreUpdatePush', (data) => {
+    console.log('push data is in!!');
+    console.log(data);
+    // update info here
+    if (data.teamOne) document.querySelector('#teamOneScore').innerHTML = data.teamOne;
+    if (data.teamTwo) document.querySelector('#teamTwoScore').innerHTML = data.teamTwo;
+  });
+
+
+  socket.on('user.events', addListItem);
+  socket.on('sendDogName', (data) => {
+    addListItem('Your dog name is ' + data);
+  });
+
+  // TODO
+  // Add namespaces for scoreUpdates and comments and maybe
+  // for subscriber comments as well
+
+
+</script>
+
+
+</body>
+</html>

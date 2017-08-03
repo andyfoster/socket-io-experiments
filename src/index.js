@@ -1,7 +1,7 @@
 const   express = require('express'),
         socketio = require('socket.io'),
-        router = require('../routes.js'),
-        redis = require('../redis.js');
+        router = require('./routes.js'),
+        redis = require('./redis.js');
 
 var app = express();
 var server = app.listen(8080);
@@ -43,10 +43,11 @@ io.on('connection', (socket) => {
   // TODO:
   // redis.incrCounter(socket.id);
 
-  socket.on('hello', (data) => {
-    console.log('recieved hello');
+
+  socket.on('scoreUpdate', (data) => {
     console.log(data);
-  })
+    io.to(data.room).emit('scoreUpdatePush', data);
+  });
 
   socket.on('pingFromWeb', (data) => {
     redis.storeUser(socket.id, data.name).then(() => {
