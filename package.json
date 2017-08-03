@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "backpack"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "backpack-core": "^0.4.1",
     "express": "^4.15.3",
     "redis": "2.6.2",
     "socket.io": "^2.0.3",
